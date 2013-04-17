@@ -1,11 +1,6 @@
 require 'bundler/setup'
 Bundler.require
 
-require_relative 'lurch/server'
-require_relative 'lurch/handler'
-
-# Should auto-require all handlers here
-
 DB = Sequel.connect('sqlite://lurch.db')
 
 DB.create_table? :rules do
@@ -15,6 +10,11 @@ DB.create_table? :rules do
   Float :popularity
   DateTime :last_accessed
 end
+
+require_relative 'lurch/server'
+require_relative 'lurch/handler'
+
+Dir[File.join(Dir.pwd, 'lib', 'lurch', 'handlers', '*.rb')].each { |handler| require handler }
 
 EventMachine.run do
   LURCH = Lurch::Server.new
