@@ -1,3 +1,5 @@
+require_relative 'rule'
+
 module Lurch
   class Handler
 

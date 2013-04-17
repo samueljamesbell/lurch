@@ -17,7 +17,7 @@ module Lurch
     end
 
     def accept(event)
-      # Handler.match(event)
+      Handler.match(event)
     end
 
     def send(data)

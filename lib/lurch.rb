@@ -2,6 +2,7 @@ require 'bundler/setup'
 Bundler.require
 
 require_relative 'lurch/server'
+require_relative 'lurch/handler'
 
 DB = Sequel.connect('sqlite://lurch.db')
 
