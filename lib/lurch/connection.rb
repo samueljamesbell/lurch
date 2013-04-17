@@ -1,3 +1,5 @@
+require_relative 'event'
+
 module Lurch
   class Connection < EM::Connection
 
@@ -7,8 +9,11 @@ module Lurch
       send_data "Hi\n"
     end
 
-    def receive_data(data)
-      server.accept(data)
+    def receive_data(json)
+      data = JSON.parse(json)
+      event = Event.new(data['service'], data['user'], data['message'])
+
+      server.accept(event)
     end
 
     def unbind
