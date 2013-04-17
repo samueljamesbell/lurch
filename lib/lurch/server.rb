@@ -1,3 +1,5 @@
+require_relative 'connection'
+
 module Lurch
   class Server
 
@@ -17,7 +19,6 @@ module Lurch
 
     def accept(event)
       @queue << event
-      puts @queue.inspect
     end
 
     def send(data)
