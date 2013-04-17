@@ -1,7 +1,7 @@
 module Lurch
   class Server
 
-    attr_accessor :queue
+    attr_accessor :queue, :connections
 
     def initialize
       @queue = []
@@ -10,6 +10,7 @@ module Lurch
 
     def start
       EventMachine.start_server '0.0.0.0', 2013, Connection do |conn|
+        conn.server = self
         @connections << conn
       end
     end
