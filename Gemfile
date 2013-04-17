@@ -4,3 +4,4 @@ ruby '1.9.3'
 
 gem 'eventmachine'
 gem 'json'
+gem 'sequel'
