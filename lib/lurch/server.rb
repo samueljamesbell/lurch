@@ -3,10 +3,9 @@ require_relative 'connection'
 module Lurch
   class Server
 
-    attr_accessor :queue, :connections
+    attr_accessor :connections
 
     def initialize
-      @queue = []
       @connections = []
     end
 
@@ -18,7 +17,7 @@ module Lurch
     end
 
     def accept(event)
-      @queue << event
+      # Handler.match(event)
     end
 
     def send(data)

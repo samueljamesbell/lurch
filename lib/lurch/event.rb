@@ -10,13 +10,6 @@ module Lurch
       @bypass = bypass
     end
 
-    def priority
-      if command?  2
-      elsif bypass?  1
-      else 0
-      end
-    end
-
     def command?
       @service == 'command'
     end
