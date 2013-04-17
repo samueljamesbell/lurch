@@ -3,6 +3,10 @@ module Lurch
 
     attr_accessor :server
 
+    def post_init
+      send_data "Hi\n"
+    end
+
     def receive_data(data)
       server.accept(data)
     end
