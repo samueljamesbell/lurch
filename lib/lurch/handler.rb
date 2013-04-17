@@ -16,11 +16,12 @@ module Lurch
     end
 
     def self.match(event)
-      puts Handler.rules.inspect
       Handler.rules.sort_by { |r| r.priority }.each do |rule|
-        # match each
+        pattern = Regexp.new(rule.pattern)
+        matches = event.message.match(pattern)
+        handler = Handlers::const_get(rule.handler).new
+        handler.instance_eval(&rule.block) unless matches.nil?
         # params = matched chunks
-        # rule.handler.new.instance_eval(rule.block)
         # if success, update frecency
       end
     end
