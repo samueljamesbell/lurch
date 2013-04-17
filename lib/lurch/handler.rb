@@ -10,7 +10,7 @@ module Lurch
     end
 
     def self.match(event)
-      @rules.sort_by { |r| r.priority }.each do |rule|
+      Handler.rules.sort_by { |r| r.priority }.each do |rule|
         # match each
         # params = matched chunks
         # rule.handler.new.instance_eval(rule.block)

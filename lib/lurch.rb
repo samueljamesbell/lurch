@@ -4,6 +4,8 @@ Bundler.require
 require_relative 'lurch/server'
 require_relative 'lurch/handler'
 
+# Should auto-require all handlers here
+
 DB = Sequel.connect('sqlite://lurch.db')
 
 DB.create_table? :rules do
