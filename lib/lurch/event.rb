@@ -18,7 +18,7 @@ module Lurch
     end
 
     def command?
-      @service == :command
+      @service == 'command'
     end
 
     def bypass?
