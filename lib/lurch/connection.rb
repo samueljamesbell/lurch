@@ -14,6 +14,8 @@ module Lurch
       event = Event.new(data['service'], data['user'], data['message'])
 
       server.accept(event)
+    rescue JSON::ParserError
+      send_data "ERROR: Invalid JSON\n"
     end
 
     def unbind
