@@ -1,6 +1,10 @@
 require_relative 'rule'
 
+
 module Lurch
+
+  class NoMatch < StandardError; end
+
   class Handler
 
     @rules = []
@@ -16,18 +20,26 @@ module Lurch
     end
 
     def self.match(event)
-      Handler.rules.sort_by { |r| r.priority }.each do |rule|
+      Handler.rules.sort { |a, b| b.priority <=> a.priority }.each do |rule|
         pattern = Regexp.new(rule.pattern)
         matches = event.message.match(pattern)
         handler = Handlers::const_get(rule.handler).new
-        handler.instance_exec(matches, &rule.block) unless matches.nil?
-        # if success, update frecency
+
+        unless matches.nil?
+          begin
+            handler.instance_exec(matches, &rule.block)
+
+            rule.rank = rule.rank + 1
+            rule.last_accessed = Time.now
+            rule.save
+          rescue NoMatch; end
+        end
       end
     end
 
     def self.register_rule(handler, pattern, &block)
       rule = Rule[:pattern => pattern.to_s, :handler => handler] ||
-             Rule.create(:pattern => pattern.to_s, :handler => handler)
+             Rule.create(:pattern => pattern.to_s, :handler => handler, :rank => 0, :last_accessed => Time.now)
 
       rule.block = block
       Handler.rules << rule

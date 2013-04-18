@@ -7,7 +7,7 @@ DB.create_table? :rules do
   primary_key [:handler, :pattern]
   String :handler
   String :pattern
-  Float :popularity
+  Integer :rank
   DateTime :last_accessed
 end
 

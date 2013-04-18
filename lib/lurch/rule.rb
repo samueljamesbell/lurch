@@ -7,11 +7,27 @@ module Lurch
     unrestrict_primary_key
 
     def priority
-      frecency # unless coming from Lurch::Output::Handler?
+      handler == 'Output' ? -1 : frecency
     end
 
     def frecency
-      0 # calculate from last_updated and popularity
+      current = Time.now
+
+      one_hour_ago = current - 3600
+      one_day_ago = current - 86400
+      one_week_ago = current - 604800
+
+      if last_accessed > one_hour_ago
+        multiplier = 4
+      elsif last_accessed > one_day_ago
+        multiplier = 2
+      elsif last_accessed > one_week_ago
+        multiplier = 0.5
+      else
+        multiplier = 0.25
+      end
+
+      rank * multiplier
     end
 
   end

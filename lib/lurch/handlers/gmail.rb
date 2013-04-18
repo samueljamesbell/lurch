@@ -9,7 +9,16 @@ module Lurch
       end
 
       def test_method
+        raise NoMatch
         puts 'METHOD WORKED'
+      end
+
+      rule /test(.)?/ do
+        puts 'another one'
+      end
+
+      rule /shouldntmatch/ do
+        puts 'should not be called'
       end
 
     end
