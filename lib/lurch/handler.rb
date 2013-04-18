@@ -1,6 +1,5 @@
 require_relative 'rule'
 
-
 module Lurch
 
   class NoMatch < StandardError; end
@@ -19,11 +18,12 @@ module Lurch
       end
     end
 
-    def self.match(event)
+    def self.match(event, server)
       Handler.rules.sort { |a, b| b.priority <=> a.priority }.each do |rule|
         pattern = Regexp.new(rule.pattern)
         matches = event.message.match(pattern)
         handler = Handlers::const_get(rule.handler).new
+        handler.server = server
 
         unless matches.nil?
           begin
@@ -43,6 +43,17 @@ module Lurch
 
       rule.block = block
       Handler.rules << rule
+    end
+
+    attr_writer :server
+
+    # TODO: Should not hardcode user to 'sam'
+    def message(msg, bypass = false)
+      @server.accept(Event.new(self.class.to_s, 'sam', msg, bypass))
+    end
+
+    def output(msg)
+      message(msg, true)
     end
 
   end

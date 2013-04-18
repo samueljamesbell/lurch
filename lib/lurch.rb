@@ -17,6 +17,6 @@ require_relative 'lurch/handler'
 Dir[File.join(Dir.pwd, 'lib', 'lurch', 'handlers', '*.rb')].each { |handler| require handler }
 
 EventMachine.run do
-  LURCH = Lurch::Server.new
-  LURCH.start
+  server = Lurch::Server.new
+  server.start
 end
