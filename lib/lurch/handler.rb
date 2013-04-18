@@ -20,8 +20,7 @@ module Lurch
         pattern = Regexp.new(rule.pattern)
         matches = event.message.match(pattern)
         handler = Handlers::const_get(rule.handler).new
-        handler.instance_eval(&rule.block) unless matches.nil?
-        # params = matched chunks
+        handler.instance_exec(matches, &rule.block) unless matches.nil?
         # if success, update frecency
       end
     end
