@@ -17,17 +17,24 @@ module Lurch
       one_day_ago = current - 86400
       one_week_ago = current - 604800
 
-      if last_accessed > one_hour_ago
+      if self.last_accessed > one_hour_ago
         multiplier = 4
-      elsif last_accessed > one_day_ago
+      elsif self.last_accessed > one_day_ago
         multiplier = 2
-      elsif last_accessed > one_week_ago
+      elsif self.last_accessed > one_week_ago
         multiplier = 0.5
       else
         multiplier = 0.25
       end
 
-      rank * multiplier
+      self.rank * multiplier
+    end
+
+    def update_frecency
+      self.rank += 1
+      self.last_accessed = Time.now
+
+      save
     end
 
   end

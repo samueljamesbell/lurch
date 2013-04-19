@@ -29,9 +29,7 @@ module Lurch
           begin
             handler.instance_exec(matches, &rule.block)
 
-            rule.rank = rule.rank + 1
-            rule.last_accessed = Time.now
-            rule.save
+            rule.update_frecency
           rescue NoMatch; end
         end
       end
