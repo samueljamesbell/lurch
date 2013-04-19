@@ -51,6 +51,11 @@ module Lurch
       throw :halt, :failure
     end
 
+    def success
+      throw :halt, :success
+    end
+
+    end
     # TODO: Should not hardcode user to 'sam'
     def message(msg, bypass = false)
       @server.accept(Event.new(self.class.to_s, 'sam', msg, bypass))
