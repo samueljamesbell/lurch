@@ -29,10 +29,11 @@ module Lurch
       Handler.rules.sort { |a, b| b.priority <=> a.priority }.each do |rule|
         pattern = Regexp.new(rule.pattern)
         matches = event.message.match(pattern)
+
         handler = Handlers::const_get(rule.handler).new
         handler.server = server
 
-        unless matches.nil?
+        if matches
           handler.invoke(matches, &rule.block) and rule.update_frecency
         end
       end
