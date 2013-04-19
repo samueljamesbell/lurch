@@ -3,7 +3,7 @@ require_relative 'rule'
 module Lurch
   class Handler
 
-    attr_writer :server
+    attr_accessor :server, :matches, :event
 
     @rules = []
 
@@ -32,22 +32,30 @@ module Lurch
         pattern = Regexp.new(rule.pattern)
         matches = event.message.match(pattern)
 
-        handler = Handlers::const_get(rule.handler).new
-        handler.server = server
-
         if matches
-          handler.invoke(matches, &rule.block) and rule.update_frecency
+          handler = Handlers::const_get(rule.handler).new
+          handler.server = server
+          handler.matches = matches
+          handler.event = event
+
+          status = catch(:halt) { handler.invoke(rule) }
+
+          rule.update_frecency unless status == :failure
+
+          break if status == :success
         end
       end
     end
 
-    def invoke(matches, &block)
-      status = catch(:halt) { instance_exec(matches, &block) }
-
-      status != :failure
+    def invoke(rule)
+      instance_eval(&rule.block)
     end
 
     protected
+
+    def succeed
+      throw :halt, :success
+    end
 
     def fail
       throw :halt, :failure
