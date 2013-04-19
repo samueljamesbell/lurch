@@ -2,12 +2,13 @@ module Lurch
   class Rule < Sequel::Model
 
     attr_accessor :block
+    attr_writer :priority
 
     set_primary_key [:handler, :pattern]
     unrestrict_primary_key
 
     def priority
-      handler == 'Output' ? -1 : frecency
+      @priority || frecency
     end
 
     def frecency
