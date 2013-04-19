@@ -1,10 +1,9 @@
 require_relative 'rule'
 
 module Lurch
-
-  class NoMatch < StandardError; end
-
   class Handler
+
+    attr_writer :server
 
     @rules = []
 
@@ -16,6 +15,14 @@ module Lurch
       subclass.define_singleton_method(:rule) do |pattern, &block|
         self.register_rule(subclass.name.split('::')[-1], pattern, &block)
       end
+    end
+
+    def self.register_rule(handler, pattern, &block)
+      rule = Rule[:pattern => pattern.to_s, :handler => handler] ||
+             Rule.create(:pattern => pattern.to_s, :handler => handler, :rank => 0, :last_accessed => Time.now)
+
+      rule.block = block
+      Handler.rules << rule
     end
 
     def self.match(event, server)
@@ -30,16 +37,6 @@ module Lurch
         end
       end
     end
-
-    def self.register_rule(handler, pattern, &block)
-      rule = Rule[:pattern => pattern.to_s, :handler => handler] ||
-             Rule.create(:pattern => pattern.to_s, :handler => handler, :rank => 0, :last_accessed => Time.now)
-
-      rule.block = block
-      Handler.rules << rule
-    end
-
-    attr_writer :server
 
     def invoke(matches, &block)
       status = catch(:halt) { instance_exec(matches, &block) }
