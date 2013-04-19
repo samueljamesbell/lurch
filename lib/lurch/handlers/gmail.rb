@@ -9,7 +9,8 @@ module Lurch
       end
 
       def test_method
-        raise NoMatch
+        fail
+
         puts 'METHOD WORKED'
       end
 

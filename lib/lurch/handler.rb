@@ -26,11 +26,7 @@ module Lurch
         handler.server = server
 
         unless matches.nil?
-          begin
-            handler.instance_exec(matches, &rule.block)
-
-            rule.update_frecency
-          rescue NoMatch; end
+          handler.invoke(matches, &rule.block) and rule.update_frecency
         end
       end
     end
@@ -44,6 +40,18 @@ module Lurch
     end
 
     attr_writer :server
+
+    def invoke(matches, &block)
+      status = catch(:halt) { instance_exec(matches, &block) }
+
+      status == :success
+    end
+
+    protected
+
+    def fail
+      throw :halt, :failure
+    end
 
     # TODO: Should not hardcode user to 'sam'
     def message(msg, bypass = false)
