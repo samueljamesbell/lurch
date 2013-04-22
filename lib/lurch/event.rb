@@ -3,7 +3,7 @@ module Lurch
 
     attr_accessor :service, :user, :message
 
-    def intialize(service, user, message, opts = {})
+    def initialize(service, user, message, opts = {})
       @service = service
       @user = user
       @message = message
