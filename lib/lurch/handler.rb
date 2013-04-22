@@ -7,9 +7,10 @@ module Lurch
 
     @rules = []
     @instances = {}
+    @latest = nil
 
     class << self
-      attr_accessor :rules, :instances
+      attr_accessor :rules, :instances, :latest
     end
 
     def self.inherited(subclass)
@@ -48,7 +49,10 @@ module Lurch
 
           status = catch(:halt) { handler.invoke(rule) }
 
-          rule.update_frecency unless status == :failure
+          unless status == :failure
+            rule.update_frecency
+            Handler.latest = rule.handler
+          end
 
           break if status == :success
         end
