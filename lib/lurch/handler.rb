@@ -6,9 +6,10 @@ module Lurch
     attr_accessor :server, :matches, :event
 
     @rules = []
+    @instances = {}
 
     class << self
-      attr_accessor :rules
+      attr_accessor :rules, :instances
     end
 
     def self.inherited(subclass)
@@ -33,8 +34,15 @@ module Lurch
         matches = event.message.match(pattern)
 
         if matches
-          handler = Handlers::const_get(rule.handler).new
-          handler.server = server
+          handler = Handler.instances[rule.handler]
+
+          unless handler
+            handler = Handlers::const_get(rule.handler).new
+            handler.server = server
+
+            Handler.instances[rule.handler] = handler
+          end
+
           handler.matches = matches
           handler.event = event
 
