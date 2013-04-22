@@ -1,11 +1,26 @@
 module Lurch
   class Rule < Sequel::Model
+    include Comparable
 
     attr_accessor :block
     attr_writer :priority
 
     set_primary_key [:handler, :pattern]
     unrestrict_primary_key
+
+    def <=>(other)
+      if Handler.latest == handler
+        1
+      elsif Handler.latest == other.handler
+        -1
+      elsif Handler.instances[handler] && ! Handler.initialized[other.handler]
+        1
+      elsif Handler.instances[other.handler] && ! Handler.initialized[handler]
+        -1
+      else
+        priority <=> other.priority
+      end
+    end
 
     def priority
       @priority || frecency
