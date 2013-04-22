@@ -29,7 +29,7 @@ module Lurch
 
     def self.match(event, server)
       Handler.rules.sort { |a, b| b.priority <=> a.priority }.each do |rule|
-        pattern = Regexp.new(rule.pattern)
+        pattern = Regexp.new(".*#{rule.pattern}.*")
         matches = event.message.match(pattern)
 
         if matches
