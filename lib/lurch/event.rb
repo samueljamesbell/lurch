@@ -3,11 +3,13 @@ module Lurch
 
     attr_accessor :service, :user, :message
 
-    def initialize(service, user, message, bypass = false)
+    def intialize(service, user, message, opts = {})
       @service = service
       @user = user
       @message = message
-      @bypass = bypass
+
+      @bypass = opts[:bypass]
+      @silent = opts[:silent]
     end
 
     def command?
@@ -16,6 +18,10 @@ module Lurch
 
     def bypass?
       @bypass
+    end
+
+    def silent?
+      @silent
     end
 
   end

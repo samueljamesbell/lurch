@@ -70,12 +70,16 @@ module Lurch
     end
 
     # TODO: Should not hardcode user to 'sam'
-    def message(msg, bypass = false)
-      @server.accept(Event.new(self.class.to_s, 'sam', msg, bypass))
+    def message(msg, opts = {})
+      @server.accept(Event.new(self.class.to_s, 'sam', msg, opts))
     end
 
     def output(msg)
-      message(msg, true)
+      message(msg, :bypass => true)
+    end
+
+    def silent(msg)
+      message(msg, :silent => true)
     end
 
   end
