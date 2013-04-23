@@ -2,7 +2,7 @@ module Lurch
   module Handlers
     class Gmail < Handler
 
-      rule /test/, 1000000 do
+      rule /test/ do
         puts 'TEST WORKED'
         puts matches.inspect
         test_method

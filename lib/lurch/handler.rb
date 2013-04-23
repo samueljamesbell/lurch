@@ -14,17 +14,16 @@ module Lurch
     end
 
     def self.inherited(subclass)
-      subclass.define_singleton_method(:rule) do |pattern, priority = nil, &block|
-        self.register_rule(subclass.name.split('::')[-1], pattern, priority, &block)
+      subclass.define_singleton_method(:rule) do |pattern, &block|
+        self.register_rule(subclass.name.split('::')[-1], pattern, &block)
       end
     end
 
-    def self.register_rule(handler, pattern, priority = nil, &block)
+    def self.register_rule(handler, pattern, &block)
       rule = Rule[:pattern => pattern.to_s, :handler => handler] ||
              Rule.create(:pattern => pattern.to_s, :handler => handler, :rank => 0, :last_accessed => Time.now)
 
       rule.block = block
-      rule.priority = priority
 
       Handler.rules << rule
     end

@@ -3,7 +3,6 @@ module Lurch
     include Comparable
 
     attr_accessor :block
-    attr_writer :priority
 
     set_primary_key [:handler, :pattern]
     unrestrict_primary_key
@@ -23,7 +22,7 @@ module Lurch
     end
 
     def priority
-      @priority || frecency
+      frecency
     end
 
     def frecency
