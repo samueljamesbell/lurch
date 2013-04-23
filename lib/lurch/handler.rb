@@ -8,9 +8,11 @@ module Lurch
     @rules = []
     @instances = {}
     @latest = nil
+    @response_required = false
+    @response = nil
 
     class << self
-      attr_accessor :rules, :instances, :latest
+      attr_accessor :rules, :instances, :latest, :response_required, :response
     end
 
     def self.inherited(subclass)
@@ -29,33 +31,38 @@ module Lurch
     end
 
     def self.match(event, server)
-      Handler.rules.sort { |a, b| b <=> a}.each do |rule|
-        next if event.urgent? && rule.handler != 'Output'
+      if Handler.response_required && event.command?
+        Handler.response = event
+        Handler.response_required = false
+      else
+        Handler.rules.sort { |a, b| b <=> a}.each do |rule|
+          next if event.urgent? && rule.handler != 'Output'
 
-        pattern = Regexp.new(".*#{rule.pattern}.*")
-        matches = event.message.match(pattern)
+          pattern = Regexp.new(".*#{rule.pattern}.*")
+          matches = event.message.match(pattern)
 
-        if matches
-          handler = Handler.instances[rule.handler]
+          if matches
+            handler = Handler.instances[rule.handler]
 
-          unless handler
-            handler = Handlers::const_get(rule.handler).new
-            handler.server = server
+            unless handler
+              handler = Handlers::const_get(rule.handler).new
+              handler.server = server
 
-            Handler.instances[rule.handler] = handler
+              Handler.instances[rule.handler] = handler
+            end
+
+            handler.matches = matches
+            handler.event = event
+
+            status = catch(:halt) { handler.invoke(rule) }
+
+            unless status == :failure
+              rule.update_frecency
+              Handler.latest = rule.handler
+            end
+
+            break if status == :success
           end
-
-          handler.matches = matches
-          handler.event = event
-
-          status = catch(:halt) { handler.invoke(rule) }
-
-          unless status == :failure
-            rule.update_frecency
-            Handler.latest = rule.handler
-          end
-
-          break if status == :success
         end
       end
     end
@@ -85,6 +92,11 @@ module Lurch
 
     def question(msg)
       message(msg, :urgent => true, :question => true)
+
+      Handler.response_required = true
+      sleep(0.5) while Handler.response_required
+
+      Handler.response.message
     end
 
     def silent(msg)
