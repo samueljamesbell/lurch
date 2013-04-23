@@ -8,7 +8,8 @@ module Lurch
       @user = user
       @message = message
 
-      @bypass = opts[:bypass]
+      @urgent = opts[:urgent]
+      @question = opts[:question]
       @silent = opts[:silent]
     end
 
@@ -16,8 +17,12 @@ module Lurch
       @service == 'command'
     end
 
-    def bypass?
-      @bypass
+    def urgent?
+      @urgent
+    end
+
+    def question?
+      @question
     end
 
     def silent?

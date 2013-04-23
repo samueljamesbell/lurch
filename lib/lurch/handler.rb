@@ -30,6 +30,8 @@ module Lurch
 
     def self.match(event, server)
       Handler.rules.sort { |a, b| b <=> a}.each do |rule|
+        next if event.urgent? && rule.handler != 'Output'
+
         pattern = Regexp.new(".*#{rule.pattern}.*")
         matches = event.message.match(pattern)
 
@@ -77,8 +79,12 @@ module Lurch
       @server.accept(Event.new(self.class.to_s, 'sam', msg, opts))
     end
 
-    def output(msg)
-      message(msg, :bypass => true)
+    def urgent(msg)
+      message(msg, :urgent => true)
+    end
+
+    def question(msg)
+      message(msg, :urgent => true, :question => true)
     end
 
     def silent(msg)
