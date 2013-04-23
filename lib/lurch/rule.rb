@@ -8,7 +8,11 @@ module Lurch
     unrestrict_primary_key
 
     def <=>(other)
-      if Handler.latest == handler
+      if handler == 'Output'
+        -1
+      elsif other.handler == 'Output'
+        1
+      elsif Handler.latest == handler
         1
       elsif Handler.latest == other.handler
         -1
@@ -17,12 +21,8 @@ module Lurch
       elsif Handler.instances[other.handler] && ! Handler.initialized[handler]
         -1
       else
-        priority <=> other.priority
+        frecency <=> other.frecency
       end
-    end
-
-    def priority
-      frecency
     end
 
     def frecency
