@@ -28,6 +28,3 @@ module Lurch
     end
   end
 end
-
-client = Lurch::Clients::Jabber.setup 'chatwithlurch@gmail.com', 'adamsfamily', 'talk.google.com', 5222
-EM.run { client.run }

@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require 'lurch'
+
+EventMachine.run do
+  server = Lurch::Server.new
+  server.start
+end
