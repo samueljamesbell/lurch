@@ -16,9 +16,9 @@ module Lurch
         1
       elsif Handler.latest == other.handler
         -1
-      elsif Handler.instances[handler] && ! Handler.initialized[other.handler]
+      elsif Handler.instances[handler] && ! Handler.instances[other.handler]
         1
-      elsif Handler.instances[other.handler] && ! Handler.initialized[handler]
+      elsif Handler.instances[other.handler] && ! Handler.instances[handler]
         -1
       else
         frecency <=> other.frecency

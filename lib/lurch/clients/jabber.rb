@@ -16,7 +16,7 @@ module Lurch
         end
 
         register_handler :subscription, :request? do |request|
-          request.approve!
+          write request.approve!
         end
       end
 
@@ -29,5 +29,5 @@ module Lurch
   end
 end
 
-client = Lurch::Clients::Jabber.setup 'lurch@localhost', 'lurch', 'localhost'
+client = Lurch::Clients::Jabber.setup 'chatwithlurch@gmail.com', 'adamsfamily', 'talk.google.com', 5222
 EM.run { client.run }

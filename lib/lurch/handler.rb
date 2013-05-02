@@ -36,7 +36,7 @@ module Lurch
         Handler.response_required = false
       else
         Handler.rules.sort { |a, b| b <=> a}.each do |rule|
-          next if event.urgent? && rule.handler != 'Output'
+          next if (event.urgent? && rule.handler != 'Output') || event.message.nil?
 
           pattern = Regexp.new(".*#{rule.pattern}.*")
           matches = event.message.match(pattern)
