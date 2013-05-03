@@ -11,6 +11,8 @@ module Lurch
 
         @socket = TCPSocket.new 'localhost', 2013
 
+        Thread.new { loop { puts @socket.gets }} 
+
         register_handler :message, :chat? do |message|
           on_message(message)
         end

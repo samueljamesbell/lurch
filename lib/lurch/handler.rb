@@ -38,8 +38,8 @@ module Lurch
         Handler.rules.sort { |a, b| b <=> a}.each do |rule|
           next if (event.urgent? && rule.handler != 'Output') || event.message.nil?
 
-          pattern = Regexp.new(".*#{rule.pattern}.*")
-          matches = event.message.match(pattern)
+          pattern = Regexp.new(rule.pattern)
+          matches = event.message.downcase.gsub(/[\'\".,]/, '').match(pattern)
 
           if matches
             handler = Handler.instances[rule.handler]
