@@ -6,7 +6,7 @@ module Lurch
         if event.command?
           server.send(%Q{Sorry, I don't understand what you mean by "#{event.message}"\n})
         else
-          server.send(event.message + "\n") unless event.silent?
+          server.send(event.message + "\n") unless event.silent? || event.handled?
         end
       end
 

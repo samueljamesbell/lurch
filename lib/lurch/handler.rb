@@ -84,6 +84,7 @@ module Lurch
     # TODO: Should not hardcode user to 'sam'
     def message(msg, opts = {})
       @server.accept(Event.new(self.class.to_s, 'sam', msg, opts))
+      event.handled
     end
 
     def urgent(msg)

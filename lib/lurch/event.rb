@@ -8,9 +8,19 @@ module Lurch
       @user = user
       @message = message
 
+      @handled = false
+
       @urgent = opts[:urgent]
       @question = opts[:question]
       @silent = opts[:silent]
+    end
+
+    def handled
+      @handled = true
+    end
+
+    def handled?
+      @handled
     end
 
     def command?
