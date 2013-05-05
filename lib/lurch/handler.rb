@@ -39,13 +39,8 @@ module Lurch
         matches = event.message.downcase.gsub(/[\'\".,]/, '').match(pattern)
 
         if matches
-          handler = Handler.instances[rule.handler]
-
-          unless handler
-            handler = Handlers::const_get(rule.handler).new
-
-            Handler.instances[rule.handler] = handler
-          end
+          handler = Handler.instances[rule.handler] ||=
+                    Handlers::const_get(rule.handler).new
 
           handler.matches = matches
           handler.event = event
