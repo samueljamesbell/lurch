@@ -3,40 +3,24 @@ module Lurch
 
     attr_accessor :service, :user, :message
 
-    def initialize(service, user, message, opts = {})
+    def initialize(service, user, message, status = nil)
       @service = service
       @user = user
       @message = message
 
-      @handled = false
-
-      @urgent = opts[:urgent]
-      @question = opts[:question]
-      @silent = opts[:silent]
-    end
-
-    def handled
-      @handled = true
-    end
-
-    def handled?
-      @handled
+      @status = status
     end
 
     def command?
       @service == 'command'
     end
 
-    def urgent?
-      @urgent
-    end
-
     def question?
-      @question
+      @status == :question
     end
 
     def silent?
-      @silent
+      @status == :silent
     end
 
   end

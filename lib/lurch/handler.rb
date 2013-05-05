@@ -3,68 +3,81 @@ require_relative 'rule'
 module Lurch
   class Handler
 
-    attr_accessor :server, :matches, :event
+    attr_accessor :matches, :event
 
     @rules = []
     @instances = {}
     @latest = nil
-    @response_required = false
-    @response = nil
+    @server = nil
 
     class << self
-      attr_accessor :rules, :instances, :latest, :response_required, :response
+      attr_accessor :rules, :instances, :latest, :server
     end
 
     def self.inherited(subclass)
       subclass.define_singleton_method(:rule) do |pattern, &block|
-        self.register_rule(subclass.name.split('::')[-1], pattern, &block)
+      self.register_rule(subclass.name.split('::')[-1], pattern, &block)
       end
     end
 
     def self.register_rule(handler, pattern, &block)
       rule = Rule[:pattern => pattern.to_s, :handler => handler] ||
-             Rule.create(:pattern => pattern.to_s, :handler => handler, :rank => 0, :last_accessed => Time.now)
+        Rule.create(:pattern => pattern.to_s, :handler => handler, :rank => 0, :last_accessed => Time.now)
 
       rule.block = block
 
       Handler.rules << rule
     end
 
-    def self.match(event, server)
-      if Handler.response_required && event.command?
-        Handler.response = event
-        Handler.response_required = false
-      else
-        Handler.rules.sort { |a, b| b <=> a}.each do |rule|
-          next if (event.urgent? && rule.handler != 'Output') || event.message.nil?
+    def self.match(event)
+      return if event.message.nil? # TODO: Should perform this validation on event creation
 
-          pattern = Regexp.new(rule.pattern)
-          matches = event.message.downcase.gsub(/[\'\".,]/, '').match(pattern)
+      command_handled = ! event.command?
 
-          if matches
-            handler = Handler.instances[rule.handler]
+      Handler.rules.sort { |a, b| b <=> a}.each do |rule|
+        pattern = Regexp.new(rule.pattern)
+        matches = event.message.downcase.gsub(/[\'\".,]/, '').match(pattern)
 
-            unless handler
-              handler = Handlers::const_get(rule.handler).new
-              handler.server = server
+        if matches
+          handler = Handler.instances[rule.handler]
 
-              Handler.instances[rule.handler] = handler
-            end
+          unless handler
+            handler = Handlers::const_get(rule.handler).new
 
-            handler.matches = matches
-            handler.event = event
+            Handler.instances[rule.handler] = handler
+          end
 
-            status = catch(:halt) { handler.invoke(rule) }
+          handler.matches = matches
+          handler.event = event
 
-            unless status == :failure
-              rule.update_frecency
-              Handler.latest = rule.handler
-            end
+          message, status = handler.invoke(rule)
+          status ||= :success
 
-            break if status == :success
+          unless status == :failure
+            command_handled = true
+
+            rule.update_frecency
+            Handler.latest = rule.handler
+
+            event = Event.new(rule.handler, 'sam', message, status)
+
+            output(event)
+            Handler.server.accept(event)
+
+            break
           end
         end
       end
+
+      error(event) unless command_handled
+    end
+
+    def self.output(event)
+      Handler.server.send(event.message + "\n") unless event.silent?
+    end
+
+    def self.error(event)
+      Handler.server.send(%Q{I'm sorry, I don't understand what you mean by "#{event.message}"\n})
     end
 
     def invoke(rule)
@@ -73,35 +86,16 @@ module Lurch
 
     protected
 
-    def succeed
-      throw :halt, :success
-    end
-
-    def fail
-      throw :halt, :failure
-    end
-
-    # TODO: Should not hardcode user to 'sam'
-    def message(msg, opts = {})
-      @server.accept(Event.new(self.class.to_s, 'sam', msg, opts))
-      event.handled
-    end
-
-    def urgent(msg)
-      message(msg, :urgent => true)
-    end
-
     def question(msg)
-      message(msg, :urgent => true, :question => true)
-
-      Handler.response_required = true
-      sleep(0.5) while Handler.response_required
-
-      Handler.response.message
+      [msg, :question]
     end
 
     def silent(msg)
-      message(msg, :silent => true)
+      [msg, :silent]
+    end
+
+    def failure(msg = '')
+      [msg, :failure]
     end
 
   end

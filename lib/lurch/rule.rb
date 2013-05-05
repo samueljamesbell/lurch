@@ -8,11 +8,7 @@ module Lurch
     unrestrict_primary_key
 
     def <=>(other)
-      if handler == 'Output'
-        -1
-      elsif other.handler == 'Output'
-        1
-      elsif Handler.latest == handler
+      if Handler.latest == handler
         1
       elsif Handler.latest == other.handler
         -1

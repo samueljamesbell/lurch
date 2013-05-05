@@ -7,6 +7,7 @@ module Lurch
 
     def initialize
       @connections = []
+      Handler.server = self
     end
 
     def start
@@ -17,7 +18,7 @@ module Lurch
     end
 
     def accept(event)
-      Handler.match(event, self)
+      Handler.match(event)
     end
 
     def send(data)

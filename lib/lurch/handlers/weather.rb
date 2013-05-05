@@ -14,7 +14,7 @@ module Lurch
         description = response['weather'][0]['description'].capitalize
         temperature = response['main']['temp']
 
-        message "#{description} and #{temperature} degrees"
+        "#{description} and #{temperature} degrees"
       end
 
     end
