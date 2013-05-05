@@ -64,7 +64,7 @@ module Lurch
         end
       end
 
-      output(%Q{I'm sorry, I don't understand what you mean by "#{event.message}"}) unless command_handled
+      output(%Q{Sorry, I don't understand "#{event.message}"}) unless command_handled
     end
 
     private
