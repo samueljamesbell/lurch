@@ -61,7 +61,7 @@ module Lurch
 
             event = Event.new(rule.handler, 'sam', message, status)
 
-            output(event)
+            output(event) unless event.silent?
             Handler.server.accept(event)
 
             break
@@ -69,15 +69,11 @@ module Lurch
         end
       end
 
-      error(event) unless command_handled
+      output(%Q{I'm sorry, I don't understand what you mean by "#{event.message}"\n}) unless command_handled
     end
 
-    def self.output(event)
-      Handler.server.send(event.message + "\n") unless event.silent?
-    end
-
-    def self.error(event)
-      Handler.server.send(%Q{I'm sorry, I don't understand what you mean by "#{event.message}"\n})
+    def self.output(message)
+      Handler.server.send(message)
     end
 
     def invoke(rule)
