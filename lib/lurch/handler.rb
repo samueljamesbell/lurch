@@ -42,10 +42,7 @@ module Lurch
           handler = Handler.instances[rule.handler] ||=
                     Handlers::const_get(rule.handler).new
 
-          handler.matches = matches
-          handler.event = event
-
-          message, status = handler.invoke(rule)
+          message, status = handler.invoke(rule, matches, event)
           status ||= :success
 
           unless status == :failure
@@ -76,6 +73,9 @@ module Lurch
     public
 
     def invoke(rule)
+      handler.matches = matches
+      handler.event = event
+
       instance_eval(&rule.block)
     end
 
