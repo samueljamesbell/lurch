@@ -23,8 +23,10 @@ module Lurch
       end
 
       def on_message(message)
-        event = {:service => :command, :user => :sam, :message => message.body}
-        @socket.sendmsg event.to_json
+        if message.body && message.body != ''
+          event = {:service => :command, :user => :sam, :message => message.body}
+          @socket.sendmsg event.to_json
+        end
       end
 
       def listen

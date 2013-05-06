@@ -30,10 +30,6 @@ module Lurch
     end
 
     def self.match(event)
-      return if event.message.nil? # TODO: Should perform this validation on event creation
-
-      command_handled = ! event.command?
-
       Handler.rules.sort { |a, b| b <=> a}.each do |rule|
         pattern = Regexp.new(rule.pattern)
         matches = event.message.downcase.gsub(/[\'\".,]/, '').match(pattern)
@@ -43,40 +39,30 @@ module Lurch
                     Handlers::const_get(rule.handler).new
 
           message, status = handler.invoke(rule, matches, event)
-          status ||= :success
 
           unless status == :failure
-            command_handled = true
+            event.handled!
 
             rule.update_frecency
             Handler.latest = rule.handler
 
-            event = Event.new(rule.handler, 'sam', message, status)
-
-            output(event.message) unless event.silent?
-            Handler.server.accept(event)
+            new_event = Event.new(rule.handler, 'sam', message, status)
+            Handler.server.accept(new_event)
 
             break
           end
         end
       end
-
-      output(%Q{Sorry, I don't understand "#{event.message}"}) unless command_handled
     end
 
-    private
+    def invoke(rule, matches, event)
+      self.matches = matches
+      self.event = event
 
-    def self.output(message)
-      Handler.server.send("#{message}\n")
-    end
+      message, status = instance_eval(&rule.block)
+      status ||= :success
 
-    public
-
-    def invoke(rule)
-      handler.matches = matches
-      handler.event = event
-
-      instance_eval(&rule.block)
+      [message, status]
     end
 
     protected

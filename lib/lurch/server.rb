@@ -19,10 +19,25 @@ module Lurch
 
     def accept(event)
       Handler.match(event)
+      output(event)
+    end
+
+    private
+
+    def output(event)
+      if event.command?
+        send(not_handled(event.message)) unless event.handled?
+      else
+        send(event.message) unless event.silent?
+      end
+    end
+
+    def not_handled(message)
+      %Q{Sorry, I don't understand "#{message}"}
     end
 
     def send(data)
-      @connections.each { |conn| conn.send_data(data) }
+      @connections.each { |conn| conn.send_data("#{data}\n") }
     end
 
   end
