@@ -1,7 +1,7 @@
 require 'bundler/setup'
 Bundler.require
 
-DB = Sequel.connect('sqlite://lurch.db')
+DB = Sequel.connect('sqlite://' + File.join(Dir.pwd, 'lurch.db'))
 
 DB.create_table? :rules do
   primary_key [:handler, :pattern]
