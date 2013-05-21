@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'bundler/setup'
+
 require_relative '../lib/lurch/clients/jabber.rb'
 
 client = Lurch::Clients::Jabber.setup 'chatwithlurch@gmail.com', 'addamsfamily', 'talk.google.com', 5222

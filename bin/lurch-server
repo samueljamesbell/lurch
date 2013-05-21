@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 
-require 'lurch'
+require 'bundler/setup'
+
+require_relative '../lib/lurch.rb'
 
 EventMachine.run do
   server = Lurch::Server.new
