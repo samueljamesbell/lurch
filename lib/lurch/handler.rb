@@ -79,5 +79,9 @@ module Lurch
       [msg, :failure]
     end
 
+    def direct(msg)
+      [msg, :direct]
+    end
+
   end
 end

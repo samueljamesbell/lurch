@@ -31,6 +31,10 @@ module Lurch
       @status == :question
     end
 
+    def direct?
+      @status == :direct
+    end
+
     def silent?
       @status == :silent
     end

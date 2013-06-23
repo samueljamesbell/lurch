@@ -18,7 +18,7 @@ module Lurch
     end
 
     def accept(event)
-      Handler.match(event)
+      Handler.match(event) unless event.direct?
       output(event)
     end
 
