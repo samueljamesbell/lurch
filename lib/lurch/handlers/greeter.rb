@@ -3,7 +3,12 @@ module Lurch
     class Greeter < Handler
 
       rule /hello|hi|hey/ do
-        direct "Hey #{event.user}, ask me anything"
+        unless event.user.name
+          event.user.name = question "Hi, what's your name?"
+          event.user.save
+        end
+
+        direct "Ask me anything, #{event.user.name.capitalize}"
       end
 
     end

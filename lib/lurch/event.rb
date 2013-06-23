@@ -4,8 +4,10 @@ module Lurch
     attr_accessor :service, :user, :message
 
     def initialize(service, user, message, status = nil)
+      @user = User[:email => user] ||
+        User.create(:email => user, :name => nil)
+
       @service = service
-      @user = user
       @message = message
 
       validate

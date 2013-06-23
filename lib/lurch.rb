@@ -11,6 +11,12 @@ DB.create_table? :rules do
   DateTime :last_accessed
 end
 
+DB.create_table? :users do
+  primary_key :email
+  String :email
+  String :name
+end
+
 require_relative 'lurch/server'
 require_relative 'lurch/handler'
 

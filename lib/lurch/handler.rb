@@ -1,4 +1,5 @@
 require_relative 'rule'
+require_relative 'user'
 
 module Lurch
   class Handler
@@ -68,6 +69,7 @@ module Lurch
     protected
 
     def question(msg)
+      #TODO: return this, do something
       [msg, :question]
     end
 
@@ -75,12 +77,12 @@ module Lurch
       [msg, :silent]
     end
 
-    def failure(msg = '')
-      [msg, :failure]
-    end
-
     def direct(msg)
       [msg, :direct]
+    end
+
+    def failure(msg = '')
+      [msg, :failure]
     end
 
   end

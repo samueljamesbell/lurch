@@ -24,7 +24,7 @@ module Lurch
 
       def on_message(message)
         if message.body && message.body != ''
-          event = {:service => :command, :user => :sam, :message => message.body}
+          event = {:service => :command, :user => message.from.strip!.to_s, :message => message.body}
           @socket.sendmsg event.to_json
         end
       end
