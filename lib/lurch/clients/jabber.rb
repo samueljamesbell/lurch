@@ -9,7 +9,7 @@ module Lurch
       def initialize
         super
 
-        @socket = TCPSocket.new 'localhost', 2013
+        @socket = TCPSocket.new '0.0.0.0', 2013
 
         register_handler :message, :chat? do |message|
           on_message(message)
