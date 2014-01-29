@@ -9,10 +9,9 @@ module Lurch
     @rules = []
     @instances = {}
     @latest = nil
-    @server = nil
 
     class << self
-      attr_accessor :rules, :instances, :latest, :server
+      attr_accessor :rules, :instances, :latest
     end
 
     def self.inherited(subclass)
@@ -48,7 +47,7 @@ module Lurch
             Handler.latest = rule.handler
 
             new_event = Event.new(rule.handler, 'sam', message, status)
-            Handler.server.accept(new_event)
+            # must dispatch new_event
 
             break
           end
