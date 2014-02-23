@@ -8,13 +8,13 @@ module Lurch
     unrestrict_primary_key
 
     def <=>(other)
-      if Handler.latest == handler
+      if Dispatch.latest == handler
         1
-      elsif Handler.latest == other.handler
+      elsif Dispatch.latest == other.handler
         -1
-      elsif Handler.instances[handler] && ! Handler.instances[other.handler]
+      elsif Dispatch.instances[handler] && ! Dispatch.instances[other.handler]
         1
-      elsif Handler.instances[other.handler] && ! Handler.instances[handler]
+      elsif Dispatch.instances[other.handler] && ! Dispatch.instances[handler]
         -1
       else
         frecency <=> other.frecency

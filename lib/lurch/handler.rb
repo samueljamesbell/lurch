@@ -1,57 +1,13 @@
-require_relative 'rule'
-require_relative 'user'
+require_relative 'dispatch'
 
 module Lurch
   class Handler
 
     attr_accessor :matches, :event
 
-    @rules = []
-    @instances = {}
-    @latest = nil
-
-    class << self
-      attr_accessor :rules, :instances, :latest
-    end
-
     def self.inherited(subclass)
       subclass.define_singleton_method(:rule) do |pattern, &block|
-      self.register_rule(subclass.name.split('::')[-1], pattern, &block)
-      end
-    end
-
-    def self.register_rule(handler, pattern, &block)
-      rule = Rule[:pattern => pattern.to_s, :handler => handler] ||
-        Rule.create(:pattern => pattern.to_s, :handler => handler, :rank => 0, :last_accessed => Time.now)
-
-      rule.block = block
-
-      Handler.rules << rule
-    end
-
-    def self.match(event)
-      Handler.rules.sort { |a, b| b <=> a}.each do |rule|
-        pattern = Regexp.new(rule.pattern)
-        matches = event.message.downcase.gsub(/[\'\".,]/, '').match(pattern)
-
-        if matches
-          handler = Handler.instances[rule.handler] ||=
-                    Handlers::const_get(rule.handler).new
-
-          message, status = handler.invoke(rule, matches, event)
-
-          unless status == :failure
-            event.handled!
-
-            rule.update_frecency
-            Handler.latest = rule.handler
-
-            new_event = Event.new(rule.handler, 'sam', message, status)
-            # must dispatch new_event
-
-            break
-          end
-        end
+        Dispatch.register_rule(subclass.name.split('::')[-1], pattern, &block)
       end
     end
 
@@ -59,14 +15,14 @@ module Lurch
       self.matches = matches
       self.event = event
 
-      message, status = instance_eval(&rule.block)
-      status ||= :success
+      status = instance_eval(&rule.block) || :success
 
-      [message, status]
+      status
     end
 
     protected
 
+    # todo: don't know how these fit in anymore
     def question(msg)
       #TODO: return this, do something
       [msg, :question]

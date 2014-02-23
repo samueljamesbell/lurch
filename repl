@@ -2,7 +2,12 @@
 
 require_relative 'lib/lurch'
 
-class REPL
+# client should register with Dispatch (on inherit?)
+# client < Handler with lowest priority.
+# single, catch-all rule - if command not handled, calls a failure method on REPL
+# otherwise, calls output method on REPL
+
+class REPL < Lurch::Client
   def run
     loop do
       line = gets.chomp
@@ -11,7 +16,7 @@ class REPL
 
       event = Lurch::Event.new :command, 'sam', line
 
-      Lurch::Handler.match event 
+      Lurch::Dispatch.send event
     end
   end
 

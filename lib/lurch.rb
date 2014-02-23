@@ -18,6 +18,7 @@ DB.create_table? :users do
 end
 
 require_relative 'lurch/server'
+require_relative 'lurch/dispatch'
 require_relative 'lurch/handler'
 
 Dir[File.join(Dir.pwd, 'lib', 'lurch', 'handlers', '*.rb')].each { |handler| require handler }
